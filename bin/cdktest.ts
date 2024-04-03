@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CdktestStack } from '../lib/cdktest-stack';
+// import { CdktestStack } from '../lib/cdktest-stack';
+import {SharedStack, LoadBalancerAttachedService} from '../lib/cdktest-stack'
 
 const app = new cdk.App();
-new CdktestStack(app, 'CdktestStack', {
+// new CdktestStack(app, 'CdktestStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -18,4 +19,22 @@ new CdktestStack(app, 'CdktestStack', {
   // env: { account: '123456789012', region: 'us-east-1' },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-});
+// });
+
+const shared = new SharedStack(app, 'shared-resources');
+
+new LoadBalancerAttachedService(app, 'service-one', {
+  cluster: shared.cluster,
+  listener: shared.listener,
+  diskPath: './service-one',
+  webPath: '/service-one*',
+  priority: 1
+})
+
+new LoadBalancerAttachedService(app, 'service-two', {
+  cluster: shared.cluster,
+  listener: shared.listener,
+  diskPath: './service-two',
+  webPath: '/service-two*',
+  priority: 2
+})
