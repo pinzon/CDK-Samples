@@ -1,28 +1,28 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-// import { CdktestStack } from '../lib/cdktest-stack';
-import {SharedStack, LoadBalancerAttachedService} from '../lib/cdktest-stack'
+import {SharedStack, LoadBalancerAttachedService} from '../lib/shared-loadbalancer'
+import {DurableStorageStack} from "../lib/durable-storage";
+import {FargateEcsPatternsStack} from "../lib/ecs-patterns";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
+import * as ecs from "aws-cdk-lib/aws-ecs";
+import {Construct} from "constructs";
+
 
 const app = new cdk.App();
-// new CdktestStack(app, 'CdktestStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+// Create a stack with multiple ecs patterns that use fargate
+const patterns = new FargateEcsPatternsStack(app, 'patterns')
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
 
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-// });
 
+
+
+
+
+// Create a shared stack with a load balancer
+// Stack from https://containersonaws.com/pattern/cdk-shared-alb-for-amazon-ecs-fargate-service
 const shared = new SharedStack(app, 'shared-resources');
-
 new LoadBalancerAttachedService(app, 'service-one', {
   cluster: shared.cluster,
   listener: shared.listener,
@@ -30,7 +30,6 @@ new LoadBalancerAttachedService(app, 'service-one', {
   webPath: '/service-one*',
   priority: 1
 })
-
 new LoadBalancerAttachedService(app, 'service-two', {
   cluster: shared.cluster,
   listener: shared.listener,
@@ -38,3 +37,7 @@ new LoadBalancerAttachedService(app, 'service-two', {
   webPath: '/service-two*',
   priority: 2
 })
+
+// Create a stack with a durable storage
+// Stack from https://containersonaws.com/pattern/elastic-file-system-ecs-cdk
+const stack = new DurableStorageStack(app,"stack")

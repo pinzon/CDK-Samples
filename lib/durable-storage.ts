@@ -8,7 +8,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2'
 
 const app = new cdk.App();
 
-export class SharedStack extends cdk.Stack {
+export class DurableStorageStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
   public readonly cluster: ecs.Cluster;
 
