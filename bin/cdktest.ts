@@ -4,21 +4,11 @@ import * as cdk from 'aws-cdk-lib';
 import {SharedStack, LoadBalancerAttachedService} from '../lib/shared-loadbalancer'
 import {DurableStorageStack} from "../lib/durable-storage";
 import {FargateEcsPatternsStack} from "../lib/ecs-patterns";
-import * as ec2 from "aws-cdk-lib/aws-ec2";
-import * as ecs from "aws-cdk-lib/aws-ecs";
-import {Construct} from "constructs";
-
 
 const app = new cdk.App();
 
 // Create a stack with multiple ecs patterns that use fargate
 const patterns = new FargateEcsPatternsStack(app, 'patterns')
-
-
-
-
-
-
 
 // Create a shared stack with a load balancer
 // Stack from https://containersonaws.com/pattern/cdk-shared-alb-for-amazon-ecs-fargate-service
@@ -40,4 +30,4 @@ new LoadBalancerAttachedService(app, 'service-two', {
 
 // Create a stack with a durable storage
 // Stack from https://containersonaws.com/pattern/elastic-file-system-ecs-cdk
-const stack = new DurableStorageStack(app,"stack")
+const stack = new DurableStorageStack(app,"durable-stack")
